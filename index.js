@@ -17,10 +17,13 @@ var bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from
 exports.parse = function (path, map) {
   var header, footer
   var parser = new Parser()
+
+  var offset = 0;
   var stream = through(function (chunk) {
     if('string' === typeof chunk)
       chunk = bufferFrom ? Buffer.from(chunk) : new Buffer(chunk)
     parser.write(chunk)
+    offset += chunk.byteLength
   },
   function (data) {
     if(data)
@@ -147,8 +150,19 @@ exports.parse = function (path, map) {
   }
 
   parser.onError = function (err) {
-    if(err.message.indexOf("at position") > -1)
-      err.message = "Invalid JSON (" + err.message + ")";
+    const originalErrMsg = err.message
+    if(originalErrMsg && originalErrMsg.indexOf("at position") > -1) {
+      const regex = /at position ([1-9][0-9]*) /
+      const positionNumMatch = originalErrMsg.match(regex)
+      if (positionNumMatch && positionNumMatch.length > 1) {
+        const relativeBytePos = parseInt(positionNumMatch[1])
+        const absolutePosition = offset + relativeBytePos + 1
+        const fixedErrMsg = originalErrMsg.replace(regex, 'at position ' + absolutePosition + ' ')
+        err.message = 'Invalid JSON (' + fixedErrMsg + ')'
+      } else {
+        err.message = 'Invalid JSON (' + originalErrMsg + ')';
+      }
+    }
     stream.emit('error', err)
   }
 
