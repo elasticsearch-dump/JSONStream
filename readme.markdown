@@ -2,15 +2,12 @@
 
 streaming JSON.parse and stringify
 
-![](https://secure.travis-ci.org/dominictarr/JSONStream.png?branch=master)
-
 ## install
-```npm install JSONStream```
+```npm install @search-dump/JSONStream```
 
 ## example
 
-``` js
-
+```js
 var request = require('request')
   , JSONStream = require('JSONStream')
   , es = require('event-stream')
@@ -27,7 +24,7 @@ request({url: 'http://isaacs.couchone.com/registry/_all_docs'})
 
 parse stream of values that match a path
 
-``` js
+```js
   JSONStream.parse('rows.*.doc')
 ```
 
@@ -47,38 +44,49 @@ If you want to have keys emitted, you can prefix your `*` operator with `$`: `ob
 
 query a couchdb view:
 
-``` bash
+```bash
 curl -sS localhost:5984/tests/_all_docs&include_docs=true
 ```
 you will get something like this:
 
-``` js
-{"total_rows":129,"offset":0,"rows":[
-  { "id":"change1_0.6995461115147918"
-  , "key":"change1_0.6995461115147918"
-  , "value":{"rev":"1-e240bae28c7bb3667f02760f6398d508"}
-  , "doc":{
-      "_id":  "change1_0.6995461115147918"
-    , "_rev": "1-e240bae28c7bb3667f02760f6398d508","hello":1}
-  },
-  { "id":"change2_0.6995461115147918"
-  , "key":"change2_0.6995461115147918"
-  , "value":{"rev":"1-13677d36b98c0c075145bb8975105153"}
-  , "doc":{
-      "_id":"change2_0.6995461115147918"
-    , "_rev":"1-13677d36b98c0c075145bb8975105153"
-    , "hello":2
-    }
-  },
-]}
-
+```json
+{
+  "total_rows": 129,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "change1_0.6995461115147918",
+      "key": "change1_0.6995461115147918",
+      "value": {
+        "rev": "1-e240bae28c7bb3667f02760f6398d508"
+      },
+      "doc": {
+        "_id": "change1_0.6995461115147918",
+        "_rev": "1-e240bae28c7bb3667f02760f6398d508",
+        "hello": 1
+      }
+    },
+    {
+      "id": "change2_0.6995461115147918",
+      "key": "change2_0.6995461115147918",
+      "value": {
+        "rev": "1-13677d36b98c0c075145bb8975105153"
+      },
+      "doc": {
+        "_id": "change2_0.6995461115147918",
+        "_rev": "1-13677d36b98c0c075145bb8975105153",
+        "hello": 2
+      }
+    },
+  ]
+}
 ```
 
 we are probably most interested in the `rows.*.doc`
 
 create a `Stream` that parses the documents from the feed like this:
 
-``` js
+```js
 var stream = JSONStream.parse(['rows', true, 'doc']) //rows, ANYTHING, doc
 
 stream.on('data', function(data) {
@@ -94,7 +102,7 @@ awesome!
 
 In case you wanted the contents the doc emitted:
 
-``` js
+```js
 var stream = JSONStream.parse(['rows', true, 'doc', {emitKey: true}]) //rows, ANYTHING, doc, items in docs with keys
 
 stream.on('data', function(data) {
@@ -124,7 +132,7 @@ will emit every `value` object that is a child, grand-child, etc. of the
 `docs` object. In this example, it will match exactly 5 times at various depth
 levels, emitting 0, 1, 2, 3 and 4 as results.
 
-```js
+```json
 {
   "total": 5,
   "docs": [
@@ -184,7 +192,7 @@ as the first argument.
 
 query npm to see all the modules that browserify has ever depended on.
 
-``` bash
+```bash
 curl https://registry.npmjs.org/browserify | JSONStream 'versions.*.dependencies'
 ```
 
@@ -194,7 +202,7 @@ numbers will be emitted as numbers.
 huge numbers that cannot be represented in memory as javascript numbers will be emitted as strings.
 cf https://github.com/creationix/jsonparse/commit/044b268f01c4b8f97fb936fc85d3bcfba179e5bb for details.
 
-## Acknowlegements
+## Acknowledgements
 
 this module depends on https://github.com/creationix/jsonparse
 by Tim Caswell
