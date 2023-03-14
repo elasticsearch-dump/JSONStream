@@ -1,15 +1,15 @@
-# JSONStream
+# jsonstream
 
 streaming JSON.parse and stringify
 
 ## install
-```npm install @search-dump/JSONStream```
+```npm install @search-dump/jsonstream```
 
 ## example
 
 ```js
 var request = require('request')
-  , JSONStream = require('JSONStream')
+  , JSONStream = require('@search-dump/jsonstream')
   , es = require('event-stream')
 
 request({url: 'http://isaacs.couchone.com/registry/_all_docs'})
@@ -193,7 +193,7 @@ as the first argument.
 query npm to see all the modules that browserify has ever depended on.
 
 ```bash
-curl https://registry.npmjs.org/browserify | JSONStream 'versions.*.dependencies'
+curl https://registry.npmjs.org/browserify | jsonstream 'versions.*.dependencies'
 ```
 
 ## numbers
